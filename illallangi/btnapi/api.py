@@ -10,6 +10,7 @@ from requests import post as http_post
 
 from yarl import URL
 
+from .tokenbucket import TokenBucket
 from .torrent import Torrent
 
 ENDPOINTDEF = 'https://api.broadcasthe.net/'
@@ -23,6 +24,7 @@ class API(object):
         self.endpoint = URL(endpoint) if not isinstance(endpoint, URL) else endpoint
         self.cache = cache
         self.config_path = get_app_dir(__package__) if not config_path else config_path
+        self.bucket = TokenBucket(150, 1 / 25)
 
     # search can be either a search string, or a search array. array currently accepts:
     # - id: Torrent ID
@@ -53,6 +55,7 @@ class API(object):
             if not self.cache or hash not in cache:
                 sleep_time = 5
                 while True:
+                    self.bucket.consume()
                     payload = {
                         'method': 'getTorrents',
                         'params': [

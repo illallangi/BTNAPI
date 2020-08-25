@@ -1,3 +1,5 @@
+from time import sleep
+
 from click import get_app_dir
 
 from diskcache import Cache
@@ -15,10 +17,11 @@ EXPIRE = 7 * 24 * 60 * 60
 
 
 class API(object):
-    def __init__(self, api_key, endpoint=ENDPOINTDEF, config_path=None, *args, **kwargs):
+    def __init__(self, api_key, endpoint=ENDPOINTDEF, cache=True, config_path=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.api_key = api_key
         self.endpoint = URL(endpoint) if not isinstance(endpoint, URL) else endpoint
+        self.cache = cache
         self.config_path = get_app_dir(__package__) if not config_path else config_path
 
     # search can be either a search string, or a search array. array currently accepts:
@@ -47,33 +50,42 @@ class API(object):
     def get_torrent(self, hash):
         hash = hash.upper()
         with Cache(self.config_path) as cache:
-            if hash not in cache:
-                payload = {
-                    'method': 'getTorrents',
-                    'params': [
-                        self.api_key,
-                        {
-                            'hash': hash
-                        },
-                        10,
-                        0
-                    ],
-                    'id': 1
-                }
-                logger.trace(payload)
-                r = http_post(self.endpoint,
-                              json=payload,
-                              headers={
-                                  'user-agent': 'illallangi-btnapi/0.0.1'
-                              })
-                logger.debug('Received {0} bytes from API'.format(len(r.content)))
-                logger.trace(r.json())
-                if 'result' not in r.json() or 'torrents' not in r.json()['result'] or len(r.json()['result']['torrents']) != 1:
-                    logger.error('No response received for hash {hash}')
-                    return None
-                cache.set(
-                    hash,
-                    r.json()['result']['torrents'][list(r.json()['result']['torrents'].keys())[0]],
-                    expire=EXPIRE)
+            if not self.cache or hash not in cache:
+                sleep_time = 5
+                while True:
+                    payload = {
+                        'method': 'getTorrents',
+                        'params': [
+                            self.api_key,
+                            {
+                                'hash': hash
+                            },
+                            10,
+                            0
+                        ],
+                        'id': 1
+                    }
+                    logger.trace(payload)
+                    r = http_post(self.endpoint,
+                                  json=payload,
+                                  headers={
+                                      'user-agent': 'illallangi-btnapi/0.0.1'
+                                  })
+                    logger.debug('Received {0} bytes from API'.format(len(r.content)))
+                    logger.trace(r.headers)
+                    logger.trace(r.json())
+                    if r.json().get('error', {}).get('code', 0) == -32002:
+                        logger.warning('{}, waiting {} seconds', r.json()['error']['message'], sleep_time)
+                        sleep(sleep_time)
+                        sleep_time = sleep_time * 2
+                        continue
+                    if 'result' not in r.json() or r.json()['result'] is None or 'torrents' not in r.json()['result'] or len(r.json()['result']['torrents']) != 1:
+                        logger.error('No response received for hash {}', hash)
+                        return None
+                    cache.set(
+                        hash,
+                        r.json()['result']['torrents'][list(r.json()['result']['torrents'].keys())[0]],
+                        expire=EXPIRE)
+                    break
 
             return Torrent(cache[hash])

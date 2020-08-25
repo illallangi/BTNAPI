@@ -71,6 +71,9 @@ class API(object):
                 if 'result' not in r.json() or 'torrents' not in r.json()['result'] or len(r.json()['result']['torrents']) != 1:
                     logger.error('No response received for hash {hash}')
                     return None
-                cache.set(hash, r.json()['result']['torrents'][list(r.json()['result']['torrents'].keys())[0]], expire=EXPIRE)
+                cache.set(
+                    hash,
+                    r.json()['result']['torrents'][list(r.json()['result']['torrents'].keys())[0]],
+                    expire=EXPIRE)
 
             return Torrent(cache[hash])

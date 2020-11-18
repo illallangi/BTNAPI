@@ -24,7 +24,7 @@ class API(object):
         self.endpoint = URL(endpoint) if not isinstance(endpoint, URL) else endpoint
         self.cache = cache
         self.config_path = get_app_dir(__package__) if not config_path else config_path
-        self.bucket = TokenBucket(150, 1 / 25)
+        self.bucket = TokenBucket(10, 5 / 10)
 
     # search can be either a search string, or a search array. array currently accepts:
     # - id: Torrent ID

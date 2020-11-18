@@ -2,11 +2,11 @@ from sys import stderr
 
 from click import Choice as CHOICE, STRING, argument, group, option
 
+from illallangi.btnapi import API as BTN_API, ENDPOINTDEF as BTN_ENDPOINTDEF
+
 from loguru import logger
 
 from notifiers.logging import NotificationHandler
-
-from .api import API as BTN_API, ENDPOINTDEF as BTN_ENDPOINTDEF
 
 
 @group()

@@ -20,7 +20,7 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     entry_points={
-        'console_scripts': ['btnapi=illallangi.btnapi:__main__.cli'],
+        'console_scripts': ['btn-tool=illallangi.btn:__main__.cli'],
     },
     install_requires=[
         'bytesize',

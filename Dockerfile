@@ -11,7 +11,7 @@ ADD . /usr/src/app
 
 RUN pip3 install .
 
-ENTRYPOINT ["/usr/local/bin/btnapi"]
+ENTRYPOINT ["/usr/local/bin/btn-tool"]
 
 ARG VCS_REF
 ARG VERSION

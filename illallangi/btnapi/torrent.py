@@ -14,8 +14,9 @@ class Torrent(object):
 
         for key in self._dictionary.keys():
             if key not in self._keys:
-                raise Exception(f'Unhandled key in {self.__class__}: {key}')
-            logger.trace('{}: {}"{}"', key, type(self._dictionary[key]), self._dictionary[key])
+                logger.error(f'Unhandled key in {self.__class__}: {key}: {type(self._dictionary[key])}"{self._dictionary[key]}"')
+                continue
+            logger.trace(f'{key}: {type(self._dictionary[key])}"{self._dictionary[key]}"')
 
     @property
     def _keys(self):

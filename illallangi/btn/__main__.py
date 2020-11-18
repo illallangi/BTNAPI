@@ -52,7 +52,6 @@ def cli(log_level, slack_webhook, slack_username, slack_format):
           type=STRING,
           required=True)
 def get_torrent(api_key, endpoint, hash, cache):
-    hash = hash.upper()
     logger.info(BTN_API(api_key, endpoint, cache).get_torrent(hash))
 
 

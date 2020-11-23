@@ -41,6 +41,7 @@ def cli(log_level, slack_webhook, slack_username, slack_format):
 
 @cli.command(name='get-torrent')
 @option('--api-key',
+        '--btn-api-key',
         type=STRING,
         required=True)
 @option('--endpoint',

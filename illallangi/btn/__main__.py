@@ -13,7 +13,7 @@ from notifiers.logging import NotificationHandler
 @option('--log-level',
         type=CHOICE(['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'SUCCESS', 'TRACE'],
                     case_sensitive=False),
-        default='INFO')
+        default='DEBUG')
 @option('--slack-webhook',
         type=STRING,
         envvar='SLACK_WEBHOOK',

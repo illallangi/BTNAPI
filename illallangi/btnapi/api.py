@@ -17,16 +17,28 @@ from .tokenbucket import TokenBucket
 from .torrent import Torrent
 
 ENDPOINTDEF = 'https://api.broadcasthe.net/'
-EXPIRE = 7 * 24 * 60 * 60
+SUCCESS_EXPIRYDEF = 7 * 24 * 60 * 60
+FAILURE_EXPIRYDEF = 60
 
 
 class API(object):
-    def __init__(self, api_key, endpoint=ENDPOINTDEF, cache=True, config_path=None, *args, **kwargs):
+    def __init__(
+            self,
+            api_key,
+            endpoint=ENDPOINTDEF,
+            cache=True,
+            config_path=None,
+            success_expiry=SUCCESS_EXPIRYDEF,
+            failure_expiry=FAILURE_EXPIRYDEF,
+            *args,
+            **kwargs):
         super().__init__(*args, **kwargs)
         self.api_key = api_key
         self.endpoint = URL(endpoint) if not isinstance(endpoint, URL) else endpoint
         self.cache = cache
         self.config_path = get_app_dir(__package__) if not config_path else config_path
+        self.success_expiry = success_expiry
+        self.failure_expiry = failure_expiry
         self.bucket = TokenBucket(10, 5 / 10)
 
     def get_index(self):
@@ -78,7 +90,7 @@ class API(object):
                     cache.set(
                         key,
                         r.json()['result'],
-                        expire=EXPIRE)
+                        expire=self.success_expiry)
                     break
 
             return cache[key]

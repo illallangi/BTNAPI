@@ -12,6 +12,7 @@ from requests import post as http_post
 
 from yarl import URL
 
+from .index import Index
 from .tokenbucket import TokenBucket
 from .torrent import Torrent
 
@@ -27,6 +28,12 @@ class API(object):
         self.cache = cache
         self.config_path = get_app_dir(__package__) if not config_path else config_path
         self.bucket = TokenBucket(10, 5 / 10)
+
+    def get_index(self):
+        result = self._rpc(self.endpoint, 'userInfo', [self.api_key])
+        if result is None:
+            return
+        return Index(result)
 
     def get_torrent(self, hash):
         result = self._rpc(self.endpoint, 'getTorrents', [self.api_key, { 'hash': hash.upper() }, 1, 0])

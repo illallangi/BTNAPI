@@ -97,3 +97,7 @@ class API(object):
                     break
 
             return cache[key]
+
+    @property
+    def supported_trackers(self):
+        return ['landof.tv']

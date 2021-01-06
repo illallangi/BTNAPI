@@ -1,10 +1,9 @@
+from json import dumps
 from time import sleep
 
 from click import get_app_dir
 
 from diskcache import Cache
-
-from json import dumps
 
 from loguru import logger
 
@@ -51,7 +50,7 @@ class API(object):
         return path.lower()
 
     def get_torrent(self, hash):
-        result = self._rpc(self.endpoint, 'getTorrents', [self.api_key, { 'hash': hash.upper() }, 1, 0])
+        result = self._rpc(self.endpoint, 'getTorrents', [self.api_key, {'hash': hash.upper()}, 1, 0])
         if 'torrents' not in result or len(result['torrents']) != 1:
             logger.error('No response received')
             return None

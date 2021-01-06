@@ -71,5 +71,27 @@ def get_index(api_key, endpoint, cache):
 def get_torrent(api_key, endpoint, hash, cache):
     logger.info(BTN_API(api_key, endpoint, cache).get_torrent(hash))
 
+
+@cli.command(name='rename-torrent-file')
+@option('--api-key',
+        '--btn-api-key',
+        envvar='BTN_API_KEY',
+        type=STRING,
+        required=True)
+@option('--endpoint',
+        type=STRING,
+        required=False,
+        default=BTN_ENDPOINTDEF)
+@option('--cache/--no-cache', default=True)
+@argument('hash',
+          type=STRING,
+          required=True)
+@argument('path',
+          type=STRING,
+          required=True)
+def rename_torrent_file(api_key, endpoint, cache, hash, path):
+    logger.info(BTN_API(api_key, endpoint, cache).rename_torrent_file(hash, path))
+
+
 if __name__ == "__main__":
     cli()

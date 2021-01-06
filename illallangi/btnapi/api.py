@@ -47,13 +47,16 @@ class API(object):
             return
         return Index(result)
 
+    def rename_torrent_file(self, hash, path):
+        return path.lower()
+
     def get_torrent(self, hash):
         result = self._rpc(self.endpoint, 'getTorrents', [self.api_key, { 'hash': hash.upper() }, 1, 0])
         if 'torrents' not in result or len(result['torrents']) != 1:
             logger.error('No response received')
             return None
         return Torrent(result['torrents'][list(result['torrents'].keys())[0]])
-    
+
     def _rpc(self, url, method, params):
         key = dumps({
             'url': url.human_repr(),
